@@ -1,3 +1,8 @@
+// The `#[pymethods]` macro in PyO3 0.22 generates result conversions that newer
+// clippy flags as `useless_conversion`; the lint targets generated code we don't
+// control, so silence it crate-wide.
+#![allow(clippy::useless_conversion)]
+
 use meti_profil_core::dataframe::DataFrame;
 use meti_profil_core::io::read_file;
 use meti_profil_core::report::markdown::MarkdownRenderer;
