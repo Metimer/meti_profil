@@ -2,6 +2,18 @@ use crate::dataframe::DataFrame;
 use arrow::array::{Array, Float64Array, Int64Array};
 use serde::Serialize;
 
+/// Default number of bins used for numeric histograms.
+const HISTOGRAM_BINS: usize = 10;
+
+/// A single histogram bin covering the half-open interval `[lower, upper)`
+/// (the last bin is closed on both ends).
+#[derive(Debug, Clone, Serialize)]
+pub struct HistogramBin {
+    pub lower: f64,
+    pub upper: f64,
+    pub count: usize,
+}
+
 #[derive(Debug, Clone, Default, Serialize)]
 pub struct NumericStats {
     pub count: usize,
@@ -15,6 +27,8 @@ pub struct NumericStats {
     pub q75: Option<f64>,
     pub skewness: Option<f64>,
     pub kurtosis: Option<f64>,
+    #[serde(default)]
+    pub histogram: Vec<HistogramBin>,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -61,19 +75,61 @@ fn analyze_array(array: &arrow::array::ArrayRef) -> Option<NumericStats> {
     let variance = values.iter().map(|v| (v - mean).powi(2)).sum::<f64>() / n;
     let std = variance.sqrt();
 
+    let min = sorted.first().copied();
+    let max = sorted.last().copied();
+    let histogram = match (min, max) {
+        (Some(lo), Some(hi)) => histogram(&sorted, lo, hi),
+        _ => Vec::new(),
+    };
+
     Some(NumericStats {
         count: array.len(),
         missing: array.null_count(),
         mean: Some(mean),
         std: Some(std),
-        min: sorted.first().copied(),
-        max: sorted.last().copied(),
+        min,
+        max,
         q25: Some(percentile(&sorted, 0.25)),
         median: Some(percentile(&sorted, 0.5)),
         q75: Some(percentile(&sorted, 0.75)),
         skewness: Some(skewness(&values, mean, std)),
         kurtosis: Some(kurtosis(&values, mean, std)),
+        histogram,
     })
+}
+
+/// Build an equal-width histogram over `[min, max]` from a sorted slice.
+fn histogram(sorted: &[f64], min: f64, max: f64) -> Vec<HistogramBin> {
+    if sorted.is_empty() {
+        return Vec::new();
+    }
+    // Degenerate range (all values equal): a single bin holding everything.
+    if max <= min {
+        return vec![HistogramBin {
+            lower: min,
+            upper: max,
+            count: sorted.len(),
+        }];
+    }
+    let bins = HISTOGRAM_BINS;
+    let width = (max - min) / bins as f64;
+    let mut counts = vec![0usize; bins];
+    for &v in sorted {
+        let mut idx = ((v - min) / width).floor() as usize;
+        if idx >= bins {
+            idx = bins - 1; // the maximum value falls in the last bin
+        }
+        counts[idx] += 1;
+    }
+    counts
+        .into_iter()
+        .enumerate()
+        .map(|(i, count)| HistogramBin {
+            lower: min + width * i as f64,
+            upper: min + width * (i + 1) as f64,
+            count,
+        })
+        .collect()
 }
 
 /// Linear-interpolated percentile over an already-sorted slice.

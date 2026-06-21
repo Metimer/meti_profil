@@ -5,6 +5,7 @@
 
 use meti_profil_core::dataframe::DataFrame;
 use meti_profil_core::io::read_file;
+use meti_profil_core::report::html::HtmlRenderer;
 use meti_profil_core::report::markdown::MarkdownRenderer;
 use meti_profil_core::report::model::Report;
 use pyo3::exceptions::PyValueError;
@@ -49,6 +50,18 @@ impl PyProfileReport {
 
     fn to_markdown(&self) -> String {
         MarkdownRenderer::render(&self.report)
+    }
+
+    /// Write the self-contained interactive HTML report to `path`.
+    fn to_html_file(&self, path: &str) -> PyResult<()> {
+        let html = HtmlRenderer::render(&self.report);
+        std::fs::write(path, html)?;
+        Ok(())
+    }
+
+    /// Return the self-contained interactive HTML report as a string.
+    fn to_html(&self) -> String {
+        HtmlRenderer::render(&self.report)
     }
 
     fn get_summary<'py>(&self, py: Python<'py>) -> PyResult<Bound<'py, PyDict>> {

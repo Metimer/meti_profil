@@ -89,6 +89,31 @@ class ProfileReport:
         """Return the Markdown report as a string."""
         return self._report.to_markdown()
 
+    def to_html(self, path: Optional[Union[str, Path]] = None) -> Optional[str]:
+        """Render the interactive HTML report.
+
+        With ``path``, write a self-contained HTML file and return ``None``.
+        Without ``path``, return the HTML document as a string.
+        """
+        if path is None:
+            return self._report.to_html()
+        self._report.to_html_file(str(path))
+        return None
+
+    def _repr_html_(self) -> str:
+        """Render inline in Jupyter / VSCode notebooks.
+
+        The full document is wrapped in a sandboxed ``<iframe>`` so its CSS and
+        JavaScript are isolated from the host notebook.
+        """
+        doc = self._report.to_html()
+        srcdoc = doc.replace("&", "&amp;").replace('"', "&quot;")
+        return (
+            '<iframe srcdoc="{srcdoc}" '
+            'style="width:100%;height:640px;border:1px solid #e3e6ec;border-radius:10px;" '
+            'sandbox="allow-scripts" loading="lazy"></iframe>'
+        ).format(srcdoc=srcdoc)
+
     def get_summary(self) -> dict:
         """Return a dictionary of dataset-level summary metrics."""
         return self._report.get_summary()

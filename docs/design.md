@@ -8,13 +8,33 @@ Recréer une alternative moderne et performante à `ydata-profiling` pour l'expl
 - Moteur de profilage écrit en Rust pour la performance.
 - Binding Python installable via `pip install meti_profil`.
 - Génération d'un rapport Markdown hybride : lisible par un humain et structuré pour être consommé par des agents de code.
+- Génération d'un rapport HTML interactif auto-contenu, et rendu inline dans Jupyter / VSCode.
 - Support de CSV, Parquet et Excel en entrée.
 - Support de datasets jusqu'à quelques millions de lignes en mémoire.
 
 **Hors scope du MVP :**
-- Interface web / UI visuelle (prévue dans une phase ultérieure).
+- Serveur web / application live (exploration dynamique côté serveur).
 - Streaming sur des datasets dépassant la RAM.
 - Moteurs distribués ou calculs sur des milliards de lignes.
+
+## Rapport HTML interactif
+
+En plus du Markdown, le moteur produit un document HTML autonome destiné aux
+data scientists / analysts :
+
+- **Auto-contenu** : CSS et JavaScript embarqués, aucune ressource externe ni
+  CDN — le fichier fonctionne hors-ligne et se partage tel quel.
+- **Visualisations** rendues en SVG interactif par un petit script vanilla
+  (pas de dépendance JS lourde) : histogrammes (numérique), barres de
+  fréquences (catégoriel), aperçu des valeurs manquantes, heatmap de
+  corrélation Pearson — avec tooltips au survol.
+- **Données** : le `Report` est sérialisé en JSON et embarqué dans la page ;
+  le script dessine les graphiques à partir de ce payload.
+- **API** : `report.to_html(path)` écrit le fichier, `report.to_html()`
+  retourne la chaîne, et `report._repr_html_()` encapsule le document dans une
+  `<iframe sandbox>` pour un rendu isolé en notebook.
+- **Implémentation** : `report/html.rs` (`HtmlRenderer`) +
+  `report/assets/report.{css,js}` inclus à la compilation via `include_str!`.
 
 ## Architecture globale
 

@@ -18,6 +18,11 @@ import meti_profil as mp
 
 # From a file
 report = mp.ProfileReport("data.csv", title="My dataset")
+
+# Interactive HTML report (self-contained, works offline)
+report.to_html("profile.html")
+
+# Markdown report (great for diffs and code agents)
 report.to_file("profile.md")
 
 # From a pandas DataFrame
@@ -29,6 +34,17 @@ report = mp.ProfileReport(df)
 print(report.get_summary())          # dataset-level metrics
 print(report.get_column_info("age")) # per-column schema info
 markdown = report.to_markdown()
+html = report.to_html()              # returns the HTML as a string
+```
+
+### In a notebook
+
+In Jupyter / VSCode, just display the report — it renders inline as an
+interactive dashboard (sandboxed, no external resources):
+
+```python
+report = mp.ProfileReport(df)
+report  # interactive histograms, bar charts, correlation heatmap, ...
 ```
 
 ### `ProfileReport` parameters
@@ -55,7 +71,23 @@ Values`, `Duplicate Rows`, and `Correlations`.
 - Schema/type detection, descriptive numeric statistics, categorical
   frequencies, missing-value and duplicate-row analysis, and Pearson
   correlations.
+- **Interactive HTML report**: a single self-contained file (embedded CSS/JS,
+  no CDN) with histograms, categorical bar charts, a missing-value overview and
+  a correlation heatmap — all with hover tooltips.
+- **Native notebook rendering** in Jupyter / VSCode via `_repr_html_`.
 - Clean Markdown reports optimized for both humans and code agents.
+
+## Output formats
+
+| Method                  | Output                                                |
+|-------------------------|-------------------------------------------------------|
+| `to_html(path)`         | Write a self-contained interactive HTML file.         |
+| `to_html()`             | Return the HTML document as a string.                 |
+| `to_file(path)`         | Write the Markdown report.                            |
+| `to_markdown()`         | Return the Markdown report as a string.               |
+| `get_summary()`         | Dataset-level metrics as a dict.                      |
+| `get_column_info(name)` | Per-column schema info as a dict.                     |
+| display in a notebook   | Inline interactive dashboard (`_repr_html_`).         |
 
 ## Development
 

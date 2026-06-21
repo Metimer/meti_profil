@@ -1,0 +1,80 @@
+:root {
+  --bg: #f6f7f9;
+  --card: #ffffff;
+  --ink: #1d2433;
+  --muted: #6b7488;
+  --line: #e3e6ec;
+  --accent: #3b6fd4;
+  --accent-soft: #e8eefb;
+  --pos: #d6453d;
+  --neg: #2f6fb0;
+  --warn: #d98324;
+  --radius: 10px;
+  --shadow: 0 1px 2px rgba(20, 28, 46, 0.06), 0 2px 8px rgba(20, 28, 46, 0.05);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.mp-wrap { max-width: 1080px; margin: 0 auto; padding: 28px 20px 64px; }
+
+header.mp-head { margin-bottom: 20px; }
+header.mp-head h1 { margin: 0 0 4px; font-size: 26px; letter-spacing: -0.01em; }
+header.mp-head .mp-sub { color: var(--muted); font-size: 13px; }
+header.mp-head .mp-sub code { background: var(--accent-soft); padding: 1px 6px; border-radius: 5px; }
+
+.mp-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin: 18px 0 28px; }
+.mp-card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; box-shadow: var(--shadow); }
+.mp-card .v { font-size: 22px; font-weight: 600; }
+.mp-card .k { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; margin-top: 2px; }
+.mp-card .s { color: var(--muted); font-size: 12px; }
+
+section.mp-sec { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); padding: 18px 20px; margin-bottom: 20px; }
+section.mp-sec > h2 { margin: 0 0 14px; font-size: 17px; }
+
+table.mp-tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
+table.mp-tbl th, table.mp-tbl td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--line); }
+table.mp-tbl th { color: var(--muted); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.03em; }
+table.mp-tbl td.num, table.mp-tbl th.num { text-align: right; font-variant-numeric: tabular-nums; }
+table.mp-tbl tr:last-child td { border-bottom: none; }
+
+.mp-pill { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 11px; font-weight: 600; background: var(--accent-soft); color: var(--accent); }
+.mp-pill.t-Categorical { background: #eaf6ec; color: #2f8f46; }
+.mp-pill.t-Numeric { background: #e8eefb; color: #3b6fd4; }
+.mp-pill.t-Text { background: #f1eef9; color: #7a52c4; }
+.mp-pill.t-Boolean { background: #fdf0e6; color: #d98324; }
+.mp-pill.t-Datetime { background: #e6f6f7; color: #1f8c92; }
+.mp-pill.t-Unique { background: #fdeaef; color: #c43c63; }
+.mp-pill.t-Constant { background: #eef0f3; color: #6b7488; }
+
+.mp-col { border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 14px; }
+.mp-col:last-child { margin-bottom: 0; }
+.mp-col h3 { margin: 0 0 10px; font-size: 15px; display: flex; align-items: center; gap: 8px; }
+.mp-col-grid { display: grid; grid-template-columns: minmax(200px, 1fr) 1.4fr; gap: 18px; align-items: start; }
+@media (max-width: 720px) { .mp-col-grid { grid-template-columns: 1fr; } }
+
+.mp-chart { width: 100%; }
+.mp-chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+.mp-bar { fill: var(--accent); transition: fill 0.1s; }
+.mp-bar:hover { fill: #2b59b8; }
+.mp-axis { stroke: var(--line); stroke-width: 1; }
+.mp-axis-text { fill: var(--muted); font-size: 10px; }
+.mp-cell { stroke: #fff; stroke-width: 1.5; cursor: default; }
+
+.mp-tooltip {
+  position: fixed; pointer-events: none; z-index: 50;
+  background: #1d2433; color: #fff; padding: 6px 9px; border-radius: 6px;
+  font-size: 12px; line-height: 1.35; box-shadow: 0 4px 14px rgba(0,0,0,.25);
+  opacity: 0; transition: opacity .08s; white-space: nowrap; max-width: 280px;
+}
+.mp-tooltip b { font-weight: 600; }
+
+.mp-empty { color: var(--muted); font-style: italic; font-size: 13px; }
+footer.mp-foot { text-align: center; color: var(--muted); font-size: 12px; margin-top: 28px; }
+footer.mp-foot a { color: var(--accent); text-decoration: none; }

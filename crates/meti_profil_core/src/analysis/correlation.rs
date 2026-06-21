@@ -11,6 +11,11 @@ pub struct CorrelationPair {
 
 #[derive(Debug, Clone, Serialize)]
 pub struct CorrelationAnalysis {
+    /// Numeric column names, in the order used by `matrix`.
+    pub columns: Vec<String>,
+    /// Full N×N Pearson matrix (`None` where a coefficient is undefined).
+    pub matrix: Vec<Vec<Option<f64>>>,
+    /// Pairs whose absolute correlation exceeds [`HIGH_CORRELATION_THRESHOLD`].
     pub pairs: Vec<CorrelationPair>,
 }
 
@@ -20,24 +25,33 @@ const HIGH_CORRELATION_THRESHOLD: f64 = 0.9;
 impl CorrelationAnalysis {
     pub fn analyze(df: &DataFrame) -> Self {
         let numeric: Vec<&Column> = df.columns().iter().filter(|c| is_numeric(c)).collect();
+        let n = numeric.len();
+        let columns: Vec<String> = numeric.iter().map(|c| c.name.clone()).collect();
 
+        let mut matrix: Vec<Vec<Option<f64>>> = vec![vec![None; n]; n];
         let mut pairs = Vec::new();
-        for i in 0..numeric.len() {
-            for j in (i + 1)..numeric.len() {
-                let a = numeric[i];
-                let b = numeric[j];
-                if let Some(pearson) = pearson(a, b) {
+        for i in 0..n {
+            matrix[i][i] = Some(1.0);
+            for j in (i + 1)..n {
+                let coeff = pearson(numeric[i], numeric[j]);
+                matrix[i][j] = coeff;
+                matrix[j][i] = coeff;
+                if let Some(pearson) = coeff {
                     if pearson.abs() > HIGH_CORRELATION_THRESHOLD {
                         pairs.push(CorrelationPair {
-                            column_a: a.name.clone(),
-                            column_b: b.name.clone(),
+                            column_a: numeric[i].name.clone(),
+                            column_b: numeric[j].name.clone(),
                             pearson,
                         });
                     }
                 }
             }
         }
-        Self { pairs }
+        Self {
+            columns,
+            matrix,
+            pairs,
+        }
     }
 }
 

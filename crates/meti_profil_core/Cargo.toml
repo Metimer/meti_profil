@@ -9,6 +9,7 @@ license.workspace = true
 arrow = { version = "53.0", default-features = false, features = ["ipc", "csv"] }
 arrow-cast = "53.0"
 serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
 thiserror = "1.0"
 
 # IO
@@ -73,6 +74,10 @@ path = "tests/rust/analysis_correlation.rs"
 [[test]]
 name = "report_markdown"
 path = "tests/rust/report_markdown.rs"
+
+[[test]]
+name = "report_html"
+path = "tests/rust/report_html.rs"
 
 [features]
 default = ["statrs"]
