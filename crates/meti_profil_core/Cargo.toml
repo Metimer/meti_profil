@@ -27,5 +27,9 @@ path = "tests/rust/smoke.rs"
 name = "dataframe"
 path = "tests/rust/dataframe.rs"
 
+[[test]]
+name = "io_csv"
+path = "tests/rust/io_csv.rs"
+
 [features]
 default = ["statrs"]
