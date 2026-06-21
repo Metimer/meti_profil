@@ -13,9 +13,6 @@ pub fn read_csv(path: impl AsRef<Path>) -> Result<DataFrame> {
     file.rewind()?;
     let builder = ReaderBuilder::new(Arc::new(schema)).with_header(true);
     let reader = builder.build(file)?;
-    let batches: Vec<_> = reader
-        .collect::<std::result::Result<Vec<_>, _>>()?
-        .into_iter()
-        .collect();
+    let batches: Vec<_> = reader.collect::<std::result::Result<Vec<_>, _>>()?;
     DataFrame::from_record_batches(batches)
 }
