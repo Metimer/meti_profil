@@ -13,7 +13,7 @@ thiserror = "1.0"
 
 # IO
 csv = "1.3"
-parquet = { version = "53.0", default-features = false, features = ["arrow"] }
+parquet = { version = "53.0", default-features = false, features = ["arrow", "snap"] }
 calamine = { version = "0.26", features = ["dates"] }
 
 # Stats
@@ -30,6 +30,10 @@ path = "tests/rust/dataframe.rs"
 [[test]]
 name = "io_csv"
 path = "tests/rust/io_csv.rs"
+
+[[test]]
+name = "io_parquet"
+path = "tests/rust/io_parquet.rs"
 
 [features]
 default = ["statrs"]
