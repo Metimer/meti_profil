@@ -14,8 +14,16 @@ fn test_schema_analysis() {
     let batch = RecordBatch::try_new(
         schema,
         vec![
-            Arc::new(Int32Array::from(vec![Some(25), Some(30), None, Some(42), Some(25)])),
-            Arc::new(StringArray::from(vec!["alice", "bob", "claire", "david", "alice"])),
+            Arc::new(Int32Array::from(vec![
+                Some(25),
+                Some(30),
+                None,
+                Some(42),
+                Some(25),
+            ])),
+            Arc::new(StringArray::from(vec![
+                "alice", "bob", "claire", "david", "alice",
+            ])),
         ],
     )
     .unwrap();

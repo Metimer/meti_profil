@@ -8,20 +8,21 @@ use std::sync::Arc;
 
 pub fn read_excel(path: impl AsRef<Path>) -> Result<DataFrame> {
     let path = path.as_ref();
-    let mut workbook: Sheets<_> = open_workbook_auto(path).map_err(|e| {
-        Error::Io(std::io::Error::other(e.to_string()))
-    })?;
-    let sheet_name = workbook.sheet_names().first().cloned().ok_or_else(|| {
-        Error::Io(std::io::Error::other("no sheet found"))
-    })?;
+    let mut workbook: Sheets<_> =
+        open_workbook_auto(path).map_err(|e| Error::Io(std::io::Error::other(e.to_string())))?;
+    let sheet_name = workbook
+        .sheet_names()
+        .first()
+        .cloned()
+        .ok_or_else(|| Error::Io(std::io::Error::other("no sheet found")))?;
     let range = workbook
         .worksheet_range(&sheet_name)
         .map_err(|e| Error::Io(std::io::Error::other(e.to_string())))?;
 
     let mut rows = range.rows();
-    let header_row = rows.next().ok_or_else(|| {
-        Error::Io(std::io::Error::other("empty excel sheet"))
-    })?;
+    let header_row = rows
+        .next()
+        .ok_or_else(|| Error::Io(std::io::Error::other("empty excel sheet")))?;
     let headers: Vec<String> = header_row
         .iter()
         .map(|c| c.to_string().trim().to_string())
@@ -53,10 +54,12 @@ pub fn read_excel(path: impl AsRef<Path>) -> Result<DataFrame> {
 }
 
 fn infer_and_build_array(cells: &[Data]) -> ArrayRef {
-    let all_int = cells.iter().all(|c| matches!(c, Data::Int(_) | Data::Empty));
-    let all_float = cells.iter().all(|c| {
-        matches!(c, Data::Float(_) | Data::Int(_) | Data::Empty)
-    });
+    let all_int = cells
+        .iter()
+        .all(|c| matches!(c, Data::Int(_) | Data::Empty));
+    let all_float = cells
+        .iter()
+        .all(|c| matches!(c, Data::Float(_) | Data::Int(_) | Data::Empty));
 
     if all_int {
         Arc::new(Int64Array::from(

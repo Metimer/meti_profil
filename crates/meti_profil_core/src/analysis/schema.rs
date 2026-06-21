@@ -1,11 +1,18 @@
 use crate::dataframe::{Column, DataFrame};
 use arrow::array::{
-    Array, Float16Array, Float32Array, Float64Array, Int16Array, Int32Array, Int64Array,
-    Int8Array, StringArray, UInt16Array, UInt32Array, UInt64Array, UInt8Array,
+    Array, BooleanArray, Date32Array, Date64Array, Float16Array, Float32Array, Float64Array,
+    Int16Array, Int32Array, Int64Array, Int8Array, StringArray, TimestampMicrosecondArray,
+    TimestampMillisecondArray, TimestampNanosecondArray, TimestampSecondArray, UInt16Array,
+    UInt32Array, UInt64Array, UInt8Array,
 };
 use arrow::datatypes::DataType;
+use arrow_cast::display::array_value_to_string;
 use serde::Serialize;
 use std::collections::HashSet;
+
+/// Maximum number of distinct values for a string column to be treated as
+/// categorical regardless of its cardinality ratio.
+const CATEGORICAL_MAX_UNIQUE: usize = 50;
 
 #[derive(Debug, Clone, Serialize, PartialEq)]
 pub enum DetectedType {
@@ -66,12 +73,26 @@ fn analyze_column(col: &Column) -> ColumnSchema {
         DetectedType::Unique
     } else {
         match &col.data_type {
-            DataType::Int8 | DataType::Int16 | DataType::Int32 | DataType::Int64
-            | DataType::UInt8 | DataType::UInt16 | DataType::UInt32 | DataType::UInt64
-            | DataType::Float16 | DataType::Float32 | DataType::Float64 => DetectedType::Numeric,
+            DataType::Int8
+            | DataType::Int16
+            | DataType::Int32
+            | DataType::Int64
+            | DataType::UInt8
+            | DataType::UInt16
+            | DataType::UInt32
+            | DataType::UInt64
+            | DataType::Float16
+            | DataType::Float32
+            | DataType::Float64 => DetectedType::Numeric,
             DataType::Boolean => DetectedType::Boolean,
             DataType::Utf8 | DataType::LargeUtf8 => {
-                if unique_count < non_null_count && non_null_count > 0 {
+                // A string column is categorical when its distinct values form a
+                // small, repeating set: either a low cardinality ratio (large
+                // datasets) or a small absolute number of distinct values (small
+                // datasets, where the ratio is unreliable).
+                if non_null_count > 0
+                    && (cardinality_ratio < 0.5 || unique_count <= CATEGORICAL_MAX_UNIQUE)
+                {
                     DetectedType::Categorical
                 } else {
                     DetectedType::Text
@@ -93,6 +114,20 @@ fn analyze_column(col: &Column) -> ColumnSchema {
         cardinality_ratio,
         is_constant,
     }
+}
+
+/// Count unique non-null values by formatting each row as a string.
+fn count_unique_strings(array: &dyn Array) -> usize {
+    let mut set: HashSet<String> = HashSet::new();
+    for i in 0..array.len() {
+        if array.is_null(i) {
+            continue;
+        }
+        if let Ok(s) = array_value_to_string(array, i) {
+            set.insert(s);
+        }
+    }
+    set.len()
 }
 
 fn count_unique(array: &arrow::array::ArrayRef) -> usize {
@@ -177,13 +212,30 @@ fn count_unique(array: &arrow::array::ArrayRef) -> usize {
         return set.len();
     }
 
-    // Fallback: collect debug-formatted rows.
-    let mut set: HashSet<String> = HashSet::new();
-    for i in 0..array.len() {
-        if array.is_null(i) {
-            continue;
-        }
-        set.insert(format!("{:?}", array));
+    // Boolean and datetime arrays: use a string representation for each row.
+    if array.as_any().downcast_ref::<BooleanArray>().is_some()
+        || array.as_any().downcast_ref::<Date32Array>().is_some()
+        || array.as_any().downcast_ref::<Date64Array>().is_some()
+        || array
+            .as_any()
+            .downcast_ref::<TimestampSecondArray>()
+            .is_some()
+        || array
+            .as_any()
+            .downcast_ref::<TimestampMillisecondArray>()
+            .is_some()
+        || array
+            .as_any()
+            .downcast_ref::<TimestampMicrosecondArray>()
+            .is_some()
+        || array
+            .as_any()
+            .downcast_ref::<TimestampNanosecondArray>()
+            .is_some()
+    {
+        return count_unique_strings(array.as_ref());
     }
-    set.len()
+
+    // Fallback for unsupported types: count unique formatted rows.
+    count_unique_strings(array.as_ref())
 }
