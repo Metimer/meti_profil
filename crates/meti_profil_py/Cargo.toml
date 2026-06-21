@@ -11,4 +11,5 @@ crate-type = ["cdylib"]
 
 [dependencies]
 meti_profil_core = { path = "../meti_profil_core" }
-pyo3 = { version = "0.22", features = ["extension-module"] }
+# abi3-py310: build a single stable-ABI wheel compatible with CPython >= 3.10.
+pyo3 = { version = "0.22", features = ["extension-module", "abi3-py310"] }
