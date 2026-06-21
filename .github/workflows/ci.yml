@@ -3,6 +3,7 @@ name: CI
 on:
   push:
     branches: [main, master]
+    tags: ["v*"]
   pull_request:
     branches: [main, master]
 
@@ -31,11 +32,14 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-      - run: |
+      - name: Install test dependencies
+        run: |
           python -m pip install --upgrade pip
-          pip install maturin pytest pandas polars pyarrow
-          maturin develop
-          pytest tests/python -v
+          pip install pytest pandas polars pyarrow
+      - name: Build and install meti_profil
+        run: pip install .
+      - name: Run tests
+        run: pytest tests/python -v
 
   release:
     runs-on: ubuntu-latest
