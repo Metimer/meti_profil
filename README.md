@@ -59,6 +59,8 @@ Values`, `Duplicate Rows`, and `Correlations`.
 
 ## Development
 
+Requires a [Rust toolchain](https://rustup.rs) (1.78+) and Python 3.10+.
+
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate

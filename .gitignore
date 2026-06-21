@@ -1,18 +1,20 @@
-.worktrees/
-.venv/
-
 # Rust
-target/
-Cargo.lock
+/target/
 
 # Python
+.venv/
 __pycache__/
 *.pyc
 .pytest_cache/
 *.egg-info/
 build/
 dist/
+
+# Compiled extension modules
 *.so
 *.dylib
 *.dll
 *.pyd
+
+# Local git worktrees
+.worktrees/
