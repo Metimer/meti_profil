@@ -8,8 +8,11 @@ by code agents.
 ## Installation
 
 ```bash
-pip install meti_profil
+pip install meti-profil
 ```
+
+> The import name is `meti_profil` (`import meti_profil as mp`). PyPI normalizes
+> the distribution name, so `pip install meti_profil` also works.
 
 ## Quick start
 

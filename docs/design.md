@@ -6,7 +6,7 @@ Recréer une alternative moderne et performante à `ydata-profiling` pour l'expl
 
 **Cibles du MVP :**
 - Moteur de profilage écrit en Rust pour la performance.
-- Binding Python installable via `pip install meti_profil`.
+- Binding Python installable via `pip install meti-profil`.
 - Génération d'un rapport Markdown hybride : lisible par un humain et structuré pour être consommé par des agents de code.
 - Génération d'un rapport HTML interactif auto-contenu, et rendu inline dans Jupyter / VSCode.
 - Support de CSV, Parquet et Excel en entrée.
@@ -278,7 +278,7 @@ requires-python = ">=3.10"
 Installation par l'utilisateur final :
 
 ```bash
-pip install meti_profil
+pip install meti-profil
 ```
 
 ## Évolutions futures
