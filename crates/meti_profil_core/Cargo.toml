@@ -63,5 +63,9 @@ path = "tests/rust/analysis_duplicate.rs"
 name = "analysis_correlation"
 path = "tests/rust/analysis_correlation.rs"
 
+[[test]]
+name = "report_markdown"
+path = "tests/rust/report_markdown.rs"
+
 [features]
 default = ["statrs"]
