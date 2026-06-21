@@ -1,5 +1,5 @@
 use crate::dataframe::DataFrame;
-use arrow::array::{Array, StringArray};
+use arrow::array::{Array, GenericStringArray, LargeStringArray, OffsetSizeTrait, StringArray};
 use serde::Serialize;
 use std::collections::HashMap;
 
@@ -38,7 +38,17 @@ impl CategoricalAnalysis {
 }
 
 fn analyze_array(array: &arrow::array::ArrayRef) -> Option<CategoricalStats> {
-    let arr = array.as_any().downcast_ref::<StringArray>()?;
+    if let Some(arr) = array.as_any().downcast_ref::<StringArray>() {
+        Some(analyze_string_array(arr))
+    } else {
+        array
+            .as_any()
+            .downcast_ref::<LargeStringArray>()
+            .map(analyze_string_array)
+    }
+}
+
+fn analyze_string_array<O: OffsetSizeTrait>(arr: &GenericStringArray<O>) -> CategoricalStats {
     let mut counts: HashMap<&str, usize> = HashMap::new();
     for i in 0..arr.len() {
         if arr.is_null(i) {
@@ -62,10 +72,10 @@ fn analyze_array(array: &arrow::array::ArrayRef) -> Option<CategoricalStats> {
     freqs.sort_by(|a, b| b.count.cmp(&a.count).then_with(|| a.value.cmp(&b.value)));
     freqs.truncate(10);
 
-    Some(CategoricalStats {
+    CategoricalStats {
         count: arr.len(),
         missing: arr.null_count(),
         unique_count: counts.len(),
         top_values: freqs,
-    })
+    }
 }

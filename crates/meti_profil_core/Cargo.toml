@@ -13,7 +13,14 @@ thiserror = "1.0"
 
 # IO
 csv = "1.3"
-parquet = { version = "53.0", default-features = false, features = ["arrow", "snap"] }
+parquet = { version = "53.0", default-features = false, features = [
+    "arrow",
+    "snap",
+    "zstd",
+    "lz4",
+    "brotli",
+    "flate2",
+] }
 calamine = { version = "0.26", features = ["dates"] }
 
 # Stats
