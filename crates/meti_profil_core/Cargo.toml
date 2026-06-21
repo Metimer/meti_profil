@@ -35,5 +35,9 @@ path = "tests/rust/io_csv.rs"
 name = "io_parquet"
 path = "tests/rust/io_parquet.rs"
 
+[[test]]
+name = "io_excel"
+path = "tests/rust/io_excel.rs"
+
 [features]
 default = ["statrs"]
