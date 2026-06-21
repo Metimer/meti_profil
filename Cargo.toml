@@ -3,7 +3,7 @@ resolver = "2"
 members = ["crates/meti_profil_core", "crates/meti_profil_py"]
 
 [workspace.package]
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 authors = ["meti_profil contributors"]
 license = "MIT"
