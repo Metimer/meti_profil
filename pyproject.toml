@@ -22,6 +22,6 @@ dependencies = []
 dev = ["pytest", "pandas", "polars", "pyarrow", "maturin"]
 
 [tool.maturin]
-manifest = "crates/meti_profil_py/Cargo.toml"
+manifest-path = "crates/meti_profil_py/Cargo.toml"
 python-source = "python"
 module-name = "meti_profil._meti_profil"
