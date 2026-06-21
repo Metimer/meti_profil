@@ -1,2 +1,14 @@
 .worktrees/
 .venv/
+
+# Rust
+target/
+Cargo.lock
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+build/
+dist/
