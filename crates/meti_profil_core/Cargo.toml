@@ -43,5 +43,25 @@ path = "tests/rust/io_excel.rs"
 name = "analysis_schema"
 path = "tests/rust/analysis_schema.rs"
 
+[[test]]
+name = "analysis_numeric"
+path = "tests/rust/analysis_numeric.rs"
+
+[[test]]
+name = "analysis_categorical"
+path = "tests/rust/analysis_categorical.rs"
+
+[[test]]
+name = "analysis_missing"
+path = "tests/rust/analysis_missing.rs"
+
+[[test]]
+name = "analysis_duplicate"
+path = "tests/rust/analysis_duplicate.rs"
+
+[[test]]
+name = "analysis_correlation"
+path = "tests/rust/analysis_correlation.rs"
+
 [features]
 default = ["statrs"]
