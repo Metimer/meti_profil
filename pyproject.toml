@@ -1,0 +1,27 @@
+[build-system]
+requires = ["maturin>=1.5,<2.0"]
+build-backend = "maturin"
+
+[project]
+name = "meti_profil"
+version = "0.1.0"
+description = "Modern, fast data profiling in Rust with Python bindings"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Rust",
+]
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest", "pandas", "polars", "pyarrow", "maturin"]
+
+[tool.maturin]
+manifest = "crates/meti_profil_py/Cargo.toml"
+python-source = "python"
+module-name = "meti_profil._meti_profil"

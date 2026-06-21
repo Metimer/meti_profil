@@ -1,0 +1,15 @@
+[package]
+name = "meti_profil_py"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[lib]
+name = "meti_profil_py"
+crate-type = ["cdylib"]
+
+[dependencies]
+meti_profil_core = { path = "../meti_profil_core" }
+pyo3 = { version = "0.22", features = ["extension-module"] }
+arrow = { version = "53.0", default-features = false }
